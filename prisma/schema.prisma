@@ -1,0 +1,35 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Url {
+  id          Int      @id @default(autoincrement())
+  url         String
+  title       String
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  shares      Share[]
+}
+
+model Share {
+  id        Int      @id @default(autoincrement())
+  urlId     Int
+  url       Url      @relation(fields: [urlId], references: [id], onDelete: Cascade)
+  platform  String   // "facebook" | "twitter" | "pinterest"
+  sessionId String
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  @@index([urlId])
+  @@index([platform])
+  @@index([sessionId])
+  @@index([createdAt])
+}
