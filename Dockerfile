@@ -23,10 +23,6 @@ RUN npx prisma generate
 ENV DATABASE_URL="file:./dev.db"
 RUN npx prisma db push && npx next build
 
-# Expose port
-EXPOSE 3000
-
 # Start the application — using test server to debug 502
-ENV PORT=3000
-ENV HOSTNAME=0.0.0.0
+# NO hardcoded PORT - let Railway set it
 CMD ["node", "test-server.js"]
