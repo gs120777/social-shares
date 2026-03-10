@@ -26,7 +26,7 @@ RUN npx prisma db push && npx next build
 # Expose port
 EXPOSE 3000
 
-# Start the application
+# Start the application — using test server to debug 502
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
-CMD ["npm", "run", "start"]
+CMD ["node", "test-server.js"]
