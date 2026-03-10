@@ -6,7 +6,7 @@
     "dev": "next dev",
     "postinstall": "prisma generate",
     "build": "prisma db push && next build",
-    "start": "next start -H 0.0.0.0 -p $PORT",
+    "start": "HOSTNAME=0.0.0.0 PORT=${PORT:-3000} node .next/standalone/server.js",
     "lint": "eslint",
     "db:push": "prisma db push",
     "db:seed": "npx tsx prisma/seed.ts",
