@@ -20,6 +20,7 @@ COPY . .
 RUN npx prisma generate
 
 # Push database schema and build Next.js
+ENV DATABASE_URL="file:./dev.db"
 RUN npx prisma db push && npx next build
 
 # Expose port
