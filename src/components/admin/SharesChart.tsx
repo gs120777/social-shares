@@ -16,11 +16,11 @@ interface SharesChartProps {
 export default function SharesChart({ data }: SharesChartProps) {
   if (data.length === 0) {
     return (
-      <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4">
-        <h3 className="text-sm font-medium text-zinc-400 mb-4">
+      <div className="bg-stone-900 border border-stone-800 rounded-2xl p-5">
+        <h3 className="text-xs font-medium text-stone-400 uppercase tracking-[0.15em] mb-4">
           Shares Over Time
         </h3>
-        <div className="h-48 flex items-center justify-center text-zinc-600 text-sm">
+        <div className="h-52 flex items-center justify-center text-stone-500 text-sm">
           No share data yet
         </div>
       </div>
@@ -28,21 +28,21 @@ export default function SharesChart({ data }: SharesChartProps) {
   }
 
   return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4">
-      <h3 className="text-sm font-medium text-zinc-400 mb-4">
+    <div className="bg-stone-900 border border-stone-800 rounded-2xl p-5 card-hover">
+      <h3 className="text-xs font-medium text-stone-400 uppercase tracking-[0.15em] mb-5">
         Shares Over Time (Last 30 Days)
       </h3>
-      <ResponsiveContainer width="100%" height={240}>
+      <ResponsiveContainer width="100%" height={260}>
         <AreaChart data={data}>
           <defs>
             <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
-              <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+              <stop offset="5%" stopColor="#f97316" stopOpacity={0.25} />
+              <stop offset="95%" stopColor="#f97316" stopOpacity={0} />
             </linearGradient>
           </defs>
           <XAxis
             dataKey="date"
-            tick={{ fill: "#71717a", fontSize: 11 }}
+            tick={{ fill: "#78716c", fontSize: 10, fontFamily: "var(--font-jetbrains-mono)" }}
             tickLine={false}
             axisLine={false}
             tickFormatter={(v) => {
@@ -51,24 +51,26 @@ export default function SharesChart({ data }: SharesChartProps) {
             }}
           />
           <YAxis
-            tick={{ fill: "#71717a", fontSize: 11 }}
+            tick={{ fill: "#78716c", fontSize: 10, fontFamily: "var(--font-jetbrains-mono)" }}
             tickLine={false}
             axisLine={false}
             allowDecimals={false}
           />
           <Tooltip
             contentStyle={{
-              background: "#18181b",
-              border: "1px solid #27272a",
-              borderRadius: "8px",
+              background: "#1c1917",
+              border: "1px solid #292524",
+              borderRadius: "12px",
               fontSize: "12px",
-              color: "#fff",
+              color: "#fafaf9",
+              fontFamily: "var(--font-jetbrains-mono)",
+              padding: "8px 12px",
             }}
           />
           <Area
             type="monotone"
             dataKey="count"
-            stroke="#3b82f6"
+            stroke="#f97316"
             fill="url(#colorCount)"
             strokeWidth={2}
           />

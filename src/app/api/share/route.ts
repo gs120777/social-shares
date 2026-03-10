@@ -4,7 +4,7 @@ import { buildShareUrl, PLATFORMS, type Platform } from "@/lib/constants";
 
 export async function POST(request: Request) {
   try {
-    const { urlId, platform, sessionId } = await request.json();
+    const { urlId, platform, sessionId, captionId } = await request.json();
 
     if (!urlId || !platform || !sessionId) {
       return NextResponse.json(
@@ -38,7 +38,32 @@ export async function POST(request: Request) {
       },
     });
 
-    const shareUrl = buildShareUrl(platform as Platform, url.url, url.title);
+    // If a captionId was provided, claim it atomically
+    let captionText: string | null = null;
+    if (captionId) {
+      // Only claim if it's still unclaimed (race-condition safe)
+      const result = await prisma.caption.updateMany({
+        where: { id: captionId, urlId, usedBySessionId: null },
+        data: { usedBySessionId: sessionId, usedAt: new Date() },
+      });
+
+      // If we successfully claimed it, fetch its text
+      if (result.count > 0) {
+        const claimed = await prisma.caption.findUnique({
+          where: { id: captionId },
+          select: { text: true },
+        });
+        captionText = claimed?.text ?? null;
+      }
+    }
+
+    const shareUrl = buildShareUrl(
+      platform as Platform,
+      url.url,
+      url.title,
+      url.description,
+      captionText
+    );
 
     return NextResponse.json({ shareUrl });
   } catch {

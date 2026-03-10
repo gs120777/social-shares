@@ -16,6 +16,32 @@ model Url {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   shares      Share[]
+  projectUrls ProjectUrl[]
+  captions    Caption[]
+}
+
+model Project {
+  id          Int          @id @default(autoincrement())
+  name        String
+  slug        String       @unique
+  description String?
+  isActive    Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  projectUrls ProjectUrl[]
+}
+
+model ProjectUrl {
+  id        Int      @id @default(autoincrement())
+  projectId Int
+  urlId     Int
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  url       Url      @relation(fields: [urlId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([projectId, urlId])
+  @@index([projectId])
+  @@index([urlId])
 }
 
 model Share {
@@ -32,4 +58,17 @@ model Share {
   @@index([platform])
   @@index([sessionId])
   @@index([createdAt])
+}
+
+model Caption {
+  id              Int       @id @default(autoincrement())
+  urlId           Int
+  url             Url       @relation(fields: [urlId], references: [id], onDelete: Cascade)
+  text            String
+  usedBySessionId String?
+  usedAt          DateTime?
+  createdAt       DateTime  @default(now())
+
+  @@index([urlId])
+  @@index([usedBySessionId])
 }

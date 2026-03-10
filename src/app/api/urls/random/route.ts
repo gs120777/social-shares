@@ -27,7 +27,14 @@ export async function GET(request: Request) {
         skip,
         select: { id: true, url: true, title: true, description: true },
       });
-      return NextResponse.json(url);
+      if (!url) {
+        return NextResponse.json({ error: "No URLs available" }, { status: 404 });
+      }
+      const caption = await prisma.caption.findFirst({
+        where: { urlId: url.id, usedBySessionId: null },
+        select: { id: true, text: true },
+      });
+      return NextResponse.json({ ...url, caption: caption || null });
     }
 
     const skip = Math.floor(Math.random() * count);
@@ -37,7 +44,16 @@ export async function GET(request: Request) {
       select: { id: true, url: true, title: true, description: true },
     });
 
-    return NextResponse.json(url);
+    if (!url) {
+      return NextResponse.json({ error: "No URLs available" }, { status: 404 });
+    }
+
+    const caption = await prisma.caption.findFirst({
+      where: { urlId: url.id, usedBySessionId: null },
+      select: { id: true, text: true },
+    });
+
+    return NextResponse.json({ ...url, caption: caption || null });
   } catch {
     return NextResponse.json(
       { error: "Internal server error" },

@@ -4,7 +4,7 @@ import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 
 const COLORS: Record<string, string> = {
   facebook: "#1877F2",
-  twitter: "#000000",
+  twitter: "#a8a29e",
   pinterest: "#E60023",
 };
 
@@ -15,11 +15,11 @@ interface PlatformPieChartProps {
 export default function PlatformPieChart({ data }: PlatformPieChartProps) {
   if (data.length === 0) {
     return (
-      <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4">
-        <h3 className="text-sm font-medium text-zinc-400 mb-4">
+      <div className="bg-stone-900 border border-stone-800 rounded-2xl p-5">
+        <h3 className="text-xs font-medium text-stone-400 uppercase tracking-[0.15em] mb-4">
           Platform Breakdown
         </h3>
-        <div className="h-48 flex items-center justify-center text-zinc-600 text-sm">
+        <div className="h-52 flex items-center justify-center text-stone-500 text-sm">
           No share data yet
         </div>
       </div>
@@ -29,8 +29,8 @@ export default function PlatformPieChart({ data }: PlatformPieChartProps) {
   const total = data.reduce((sum, d) => sum + d.count, 0);
 
   return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4">
-      <h3 className="text-sm font-medium text-zinc-400 mb-4">
+    <div className="bg-stone-900 border border-stone-800 rounded-2xl p-5 card-hover">
+      <h3 className="text-xs font-medium text-stone-400 uppercase tracking-[0.15em] mb-5">
         Platform Breakdown
       </h3>
       <ResponsiveContainer width="100%" height={240}>
@@ -42,22 +42,25 @@ export default function PlatformPieChart({ data }: PlatformPieChartProps) {
             cx="50%"
             cy="50%"
             outerRadius={80}
+            innerRadius={50}
             strokeWidth={0}
           >
             {data.map((entry) => (
               <Cell
                 key={entry.platform}
-                fill={COLORS[entry.platform] || "#71717a"}
+                fill={COLORS[entry.platform] || "#78716c"}
               />
             ))}
           </Pie>
           <Tooltip
             contentStyle={{
-              background: "#18181b",
-              border: "1px solid #27272a",
-              borderRadius: "8px",
+              background: "#1c1917",
+              border: "1px solid #292524",
+              borderRadius: "12px",
               fontSize: "12px",
-              color: "#fff",
+              color: "#fafaf9",
+              fontFamily: "var(--font-jetbrains-mono)",
+              padding: "8px 12px",
             }}
             formatter={(value, name) => [
               `${value} (${Math.round((Number(value) / total) * 100)}%)`,
@@ -66,14 +69,14 @@ export default function PlatformPieChart({ data }: PlatformPieChartProps) {
           />
         </PieChart>
       </ResponsiveContainer>
-      <div className="flex justify-center gap-4 mt-2">
+      <div className="flex justify-center gap-5 mt-3">
         {data.map((d) => (
-          <div key={d.platform} className="flex items-center gap-1.5 text-xs">
+          <div key={d.platform} className="flex items-center gap-2 text-xs">
             <div
-              className="w-2.5 h-2.5 rounded-full"
-              style={{ background: COLORS[d.platform] || "#71717a" }}
+              className="w-2 h-2 rounded-full"
+              style={{ background: COLORS[d.platform] || "#78716c" }}
             />
-            <span className="text-zinc-400 capitalize">{d.platform}</span>
+            <span className="text-stone-300 capitalize font-medium">{d.platform}</span>
           </div>
         ))}
       </div>

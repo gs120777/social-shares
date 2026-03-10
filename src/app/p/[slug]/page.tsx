@@ -1,12 +1,38 @@
+import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import ShareCard from "@/components/worker/ShareCard";
 
 export const dynamic = "force-dynamic";
 
-export default async function HomePage() {
-  const count = await prisma.url.count({ where: { isActive: true } });
+export default async function ProjectPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
 
-  if (count === 0) {
+  const project = await prisma.project.findUnique({
+    where: { slug, isActive: true },
+    include: {
+      projectUrls: {
+        include: {
+          url: {
+            select: { id: true, url: true, title: true, description: true, isActive: true },
+          },
+        },
+      },
+    },
+  });
+
+  if (!project) {
+    notFound();
+  }
+
+  const activeUrls = project.projectUrls
+    .map((pu) => pu.url)
+    .filter((u) => u.isActive);
+
+  if (activeUrls.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center px-4 relative">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(249,115,22,0.06)_0%,transparent_60%)]" />
@@ -20,23 +46,16 @@ export default async function HomePage() {
             No URLs Available
           </h1>
           <p className="text-stone-400 max-w-xs mx-auto leading-relaxed">
-            Check back later — new URLs will be added soon.
+            This project doesn&apos;t have any active URLs yet. Check back later.
           </p>
         </div>
       </div>
     );
   }
 
-  const skip = Math.floor(Math.random() * count);
-  const url = await prisma.url.findFirst({
-    where: { isActive: true },
-    skip,
-    select: { id: true, url: true, title: true, description: true },
-  });
-
-  if (!url) {
-    return null;
-  }
+  // Pick a random URL
+  const randomIndex = Math.floor(Math.random() * activeUrls.length);
+  const url = activeUrls[randomIndex];
 
   // Fetch an unclaimed caption for this URL
   const caption = await prisma.caption.findFirst({
@@ -54,14 +73,21 @@ export default async function HomePage() {
           Live
         </div>
         <h1 className="text-4xl sm:text-5xl font-bold text-stone-50 tracking-tight">
-          Social<span className="text-orange-500">Shares</span>
+          {project.name}
         </h1>
-        <p className="text-stone-300 mt-3 text-lg">
-          Share the URL below on your social media
-        </p>
+        {project.description && (
+          <p className="text-stone-300 mt-3 text-lg max-w-md mx-auto">
+            {project.description}
+          </p>
+        )}
+        {!project.description && (
+          <p className="text-stone-300 mt-3 text-lg">
+            Share the URL below on your social media
+          </p>
+        )}
       </div>
 
-      <ShareCard initialUrl={{ ...url, caption: caption || null }} />
+      <ShareCard initialUrl={{ ...url, caption: caption || null }} projectSlug={slug} />
     </div>
   );
 }
